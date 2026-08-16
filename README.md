@@ -1,5 +1,6 @@
 # SFTP App
 
+[![CI](https://github.com/emadubuko/sftp-web-app/actions/workflows/ci.yml/badge.svg)](https://github.com/emadubuko/sftp-web-app/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/github/license/emadubuko/sftp-web-app)](LICENSE)
 [![Node.js >= 20](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
 
