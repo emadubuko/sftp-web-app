@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SFTP App</title>
+  <style>
+:root {
+  color-scheme: light dark;
+  --accent: #2563eb;
+  --border: #d8dde3;
+  --muted: #6b7280;
+  --bg: #ffffff;
+  --fg: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --border: #333a45;
+    --muted: #9aa4b2;
+    --bg: #14171c;
+    --fg: #e5e7eb;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.view {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Login */
+
+.login-form {
+  max-width: 320px;
+  margin: 4rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.login-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.login-form input {
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+}
+
+.login-form button {
+  margin-top: 0.5rem;
+  padding: 0.55rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 0.85rem;
+}
+
+/* Browser */
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.breadcrumbs a,
+.breadcrumbs span {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.breadcrumbs a {
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.breadcrumbs .sep {
+  margin: 0 0.35rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.topbar-actions button {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.toolbar button,
+.upload-btn {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.upload-progress {
+  margin-bottom: 1rem;
+}
+
+.upload-progress-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.upload-progress progress {
+  width: 100%;
+}
+
+.file-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.file-table th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0.4rem;
+}
+
+.file-table td {
+  padding: 0.55rem 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.file-table tr.entry-row {
+  cursor: default;
+}
+
+.file-table a.entry-link {
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.file-table a.entry-link:hover {
+  text-decoration: underline;
+}
+
+.empty-state {
+  color: var(--muted);
+  padding: 1.5rem 0;
+  text-align: center;
+}
+  </style>
+</head>
+<body>
+  <main id="login-view" class="view">
+    <form id="login-form" class="login-form">
+      <h1>Sign in</h1>
+      <label>
+        Username
+        <input type="text" name="username" autocomplete="username" required />
+      </label>
+      <label>
+        Password
+        <input type="password" name="password" autocomplete="current-password" required />
+      </label>
+      <button type="submit">Sign in</button>
+      <p id="login-error" class="error hidden"></p>
+    </form>
+  </main>
+
+  <main id="browser-view" class="view hidden">
+    <header class="topbar">
+      <nav id="breadcrumbs" class="breadcrumbs"></nav>
+      <div class="topbar-actions">
+        <span id="whoami"></span>
+        <button id="logout-btn" type="button">Log out</button>
+      </div>
+    </header>
+
+    <section class="toolbar">
+      <button id="new-folder-btn" type="button">New folder</button>
+      <label class="upload-btn">
+        Upload file
+        <input id="upload-input" type="file" hidden />
+      </label>
+    </section>
+
+    <section id="upload-progress" class="upload-progress hidden">
+      <div class="upload-progress-label"></div>
+      <progress id="upload-progress-bar" value="0" max="100"></progress>
+    </section>
+
+    <table class="file-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Size</th>
+          <th>Modified</th>
+        </tr>
+      </thead>
+      <tbody id="file-list"></tbody>
+    </table>
+
+    <p id="empty-state" class="empty-state hidden">This folder is empty.</p>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/browser.js"></script>
+  <script src="/js/upload.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

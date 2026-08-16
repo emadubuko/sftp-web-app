@@ -1,0 +1,22 @@
+services:
+  sftp-app:
+    image: gghn/sftp-web-app:latest
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      HOST: 0.0.0.0
+      STORAGE_ROOT: /data/storage
+    # Bind-mounts your existing SFTP upload directory straight into the container. Set SFTP_HOST_DIR in .env to its absolute path on the host.
+    # The app never creates this directory itself — it must already exist and be readable/writable by UID 1004 / GID 1003 (nassco/sftpgroup, see Dockerfile), or the container will fail to start.
+    volumes:
+      - ${SFTP_HOST_DIR}:/data/storage
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3001/api/me',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
