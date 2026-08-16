@@ -16,7 +16,9 @@ function buildApp(config) {
     logger:
       config.nodeEnv === 'production'
         ? true
-        : { transport: { target: 'pino-pretty' } },
+        : config.nodeEnv === 'test'
+          ? false
+          : { transport: { target: 'pino-pretty' } },
     trustProxy: config.trustProxy,
   });
 
