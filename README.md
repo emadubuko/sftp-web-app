@@ -1,5 +1,8 @@
 # SFTP App
 
+[![License: MIT](https://img.shields.io/github/license/emadubuko/sftp-web-app)](LICENSE)
+[![Node.js >= 20](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
+
 A web-based file manager: browse a directory tree, create folders, and
 upload large files, over plain HTTP (not the SSH/SFTP protocol).
 Single-admin session auth, streaming uploads (no in-memory buffering, so
