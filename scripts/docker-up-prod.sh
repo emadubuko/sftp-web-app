@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Starts the app on the server from the pushed Docker Hub image
-# (gghn/sftp-web-app), using docker-compose.prod.yml instead of the dev
+# (youruser/sftp-app), using docker-compose.prod.yml instead of the dev
 # docker-compose.yml (which builds from local source).
 #
 # A production deploy only needs three files sitting together in one

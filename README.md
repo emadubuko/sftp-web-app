@@ -51,7 +51,7 @@ npm test
    host to your existing SFTP upload directory. `docker-compose.yml`
    reads this same `.env` file.
 2. Make sure `SFTP_HOST_DIR` is readable/writable by UID `1004` / GID
-   `1003` (`nassco`/`sftpgroup`, the user the container runs as — see
+   `1003` (`appuser`/`appgroup`, the user the container runs as — see
    `Dockerfile`), e.g.:
 
    ```bash
@@ -82,7 +82,7 @@ npm test
 `docker-compose.yml` (above) builds the image from local source — that's
 for development. On the actual server, use `docker-compose.prod.yml`
 instead, which pulls the pre-built image from Docker Hub
-(`gghn/sftp-web-app:latest`) rather than building it.
+(`youruser/sftp-app:latest`) rather than building it.
 
 Since the image is pulled pre-built, the server doesn't need the full
 repo — only these three files, copied into the same directory:

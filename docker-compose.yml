@@ -12,8 +12,8 @@ services:
       PORT: 3001
       HOST: 0.0.0.0
       STORAGE_ROOT: /data/storage
-    # Bind-mounts your existing SFTP upload directory straight into the container. Set SFTP_HOST_DIR in .env to its absolute path on the host. 
-    # The app never creates this directory itself — it must already exist and be readable/writable by UID 1004 / GID 1003 (nassco/sftpgroup, see Dockerfile), or the container will fail to start.
+    # Bind-mounts your existing SFTP upload directory straight into the container. Set SFTP_HOST_DIR in .env to its absolute path on the host.
+    # The app never creates this directory itself — it must already exist and be readable/writable by UID 1004 / GID 1003 (appuser/appgroup, see Dockerfile), or the container will fail to start.
     volumes:
       - ${SFTP_HOST_DIR}:/data/storage
     healthcheck:
